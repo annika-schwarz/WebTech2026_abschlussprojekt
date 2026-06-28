@@ -22,9 +22,11 @@
               {
                 "glob": "**/*",
                 "input": "public"
+                
               }
             ],
             "styles": [
+              "public/assets/bootstrap/css/bootstrap.min.css",
               "src/styles.css"
             ]
           },
