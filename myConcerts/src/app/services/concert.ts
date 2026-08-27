@@ -34,7 +34,10 @@ export class ConcertService {
     return this.concerts().filter(c => c.date < today); // Filterung der Konzerte, die in der Vergangenheit liegen
   })
 
-  
+  upcomingConcerts = computed(() => {
+    const today = new Date().toISOString().split('T')[0]; // aktuelles Datum im Format YYYY-MM-DD
+    return this.concerts().filter(c => c.date >= today); // Filterung der Konzerte, die in der Zukunft (+ heutiges Datum) liegen
+  }
 
 
 }
