@@ -1,3 +1,17 @@
+<!-- Test für den ConcertService -->
+<div style="background: #e0f2fe; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+  <h3>🎸 ConcertService Status: ERFOLGREICH!</h3>
+  <p>Geladene Konzerte im Signal: <strong>{{ concertService.allConcerts().length }}</strong></p>
+  <ul>
+    @for (c of concertService.allConcerts(); track c.id) {
+      <li><strong>{{ c.artist }}</strong> – {{ c.venue }} ({{ c.date }}) ({{ c.isPast ? 'Vergangenheit' : 'Zukunft' }})</li>
+    }
+  </ul>
+</div>
+<!-- Ende des Testbereichs -->
+
+
+
 <div class="container my-5">
     <div class="row g-3 g-md-4 g-lg-5">
 
