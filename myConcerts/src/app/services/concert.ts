@@ -37,6 +37,19 @@ export class ConcertService {
   upcomingConcerts = computed(() => {
     const today = new Date().toISOString().split('T')[0]; // aktuelles Datum im Format YYYY-MM-DD
     return this.concerts().filter(c => c.date >= today); // Filterung der Konzerte, die in der Zukunft (+ heutiges Datum) liegen
+  })
+
+  addConcert(concertData: Omit<Concert, 'id'| 'isPast'>): void {  // Utility Type Omit kreiert einen neuen Typ, der alle Eigenschaften von Concert enthält, außer 'id' und 'isPast'
+    const today = new Date().toISOString().split('T')[0];         // aktuelles Datum im Format YYYY-MM-DD
+
+    const newConcert: Concert = {
+      ...concertData,
+      id: crypto.randomUUID(), // Generierung einer eindeutigen ID für das neue Konzert
+      isPast: concertData.date < today // Bestimmung, ob das Konzert in der Vergangenheit liegt
+    };
+
+    this.concerts.update(currentConcerts => [...currentConcerts, newConcert]); // Hinzufügen des neuen Konzerts zum Signal durch Erstellen eines neuen Arrays, das alle aktuellen Konzerte und das neue Konzert enthält
+
   }
 
 
