@@ -1,67 +1,113 @@
-<!-- Test für den ConcertService -->
-<div style="background: #e0f2fe; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
-  <h3>🎸 ConcertService Status: ERFOLGREICH!</h3>
-  <p>Geladene Konzerte im Signal: <strong>{{ concertService.allConcerts().length }}</strong></p>
-  <ul>
-    @for (c of concertService.allConcerts(); track c.id) {
-      <li><strong>{{ c.artist }}</strong> – {{ c.venue }} ({{ c.date }}) ({{ c.isPast ? 'Vergangenheit' : 'Zukunft' }})</li>
-    }
-  </ul>
-</div>
-<!-- Ende des Testbereichs -->
+<div class="container py-4">
 
+    <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Dashboard</h2>
+    <a routerLink="/add" class="btn btn-primary">+ Konzert hinzufügen</a>
+    </div>
 
-
-<div class="container my-5">
-    <div class="row g-3 g-md-4 g-lg-5">
-
-        <!-- Erste Karte -->
-        <div class="col-6 col-md-3">
-            <div class="h-100">
-                <div class="ratio ratio-1x1">   <!-- Ratio-Container für 1:1 -->
-                    <img src="../../assets/images/concert.jpg" class="rounded-4" style="object-fit: cover;" alt="...">
-                </div>
-                <div class="py-2">
-                    <h5 class="text-center">KONZERTE</h5>   
-                </div>
-            </div>
+    <!-- DASHBOARD KACHELN (4er-Grid) -->
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-4 g-3 mb-4">
+    
+    <!-- Kachel 1: Alle -->
+    <div class="col">
+        <div 
+        class="card h-100 shadow-sm text-center cursor-pointer"
+        [class.border-primary]="selectedFilter() === 'all'"
+        [class.bg-primary]="selectedFilter() === 'all'"
+        [class.text-white]="selectedFilter() === 'all'"
+        (click)="switchFilter('all')">
+        <div class="card-body">
+            <h6 class="card-subtitle mb-1">Alle Konzerte</h6>
+            <h2 class="card-title mb-0">{{ concertService.allConcerts().length }}</h2>
         </div>
-
-        <!-- Zweite Karte -->
-        <div class="col-6 col-md-3">
-            <div class="h-100">
-                <div class="ratio ratio-1x1">   <!-- Ratio-Container für 1:1 -->
-                    <img src="../../assets/images/concert.jpg" class="rounded-4" style="object-fit: cover;" alt="...">
-                </div>
-                <div class="py-2">
-                    <h5 class="text-center">ARTISTS</h5>   
-                </div>
-            </div>
         </div>
+    </div>
 
-        <!-- Dritte Karte -->
-        <div class="col-6 col-md-3">
-            <div class="h-100">
-                <div class="ratio ratio-1x1">   <!-- Ratio-Container für 1:1 -->
-                    <img src="../../assets/images/concert.jpg" class="rounded-4" style="object-fit: cover;" alt="...">
-                </div>
-                <div class="py-2">
-                    <h5 class="text-center">FESTIVALS</h5>   
-                </div>
-            </div>
+    <!-- Kachel 2: Anstehend -->
+    <div class="col">
+        <div 
+        class="card h-100 shadow-sm text-center cursor-pointer"
+        [class.border-primary]="selectedFilter() === 'upcoming'"
+        [class.bg-primary]="selectedFilter() === 'upcoming'"
+        [class.text-white]="selectedFilter() === 'upcoming'"
+        (click)="switchFilter('upcoming')">
+        <div class="card-body">
+            <h6 class="card-subtitle mb-1">Anstehend</h6>
+            <h2 class="card-title mb-0">{{ concertService.upcomingConcerts().length }}</h2>
         </div>
+        </div>
+    </div>
 
-        <!-- Vierte Karte -->
-        <div class="col-6 col-md-3">
-            <div class="h-100">
-                <div class="ratio ratio-1x1">   <!-- Ratio-Container für 1:1 -->
-                    <img src="../../assets/images/concert.jpg" class="rounded-4" style="object-fit: cover;" alt="...">
-                </div>
-                <div class="py-2">
-                    <h5 class="text-center">KONZERTE</h5>   
-                </div>
-            </div>
-        </div>        
+    <!-- Kachel 3: Vergangen -->
+    <div class="col">
+        <div 
+        class="card h-100 shadow-sm text-center cursor-pointer"
+        [class.border-primary]="selectedFilter() === 'past'"
+        [class.bg-primary]="selectedFilter() === 'past'"
+        [class.text-white]="selectedFilter() === 'past'"
+        (click)="switchFilter('past')">
+        <div class="card-body">
+            <h6 class="card-subtitle mb-1">Vergangen</h6>
+            <h2 class="card-title mb-0">{{ concertService.pastConcerts().length }}</h2>
+        </div>
+        </div>
+    </div>
+
+    <!-- Kachel 4: Ø Bewertung (Statisch, zeigt Notenschnitt) -->
+    <div class="col">
+        <div class="card h-100 shadow-sm text-center bg-light">
+        <div class="card-body">
+            <h6 class="card-subtitle mb-1 text-muted">Ø Bewertung</h6>
+            <h2 class="card-title mb-0 text-warning">{{ concertService.averageRating() }} ⭐</h2>
+        </div>
+        </div>
+    </div>
 
     </div>
+
+    <!-- GEFILTERTE KONZERT-LISTE -->
+    <div class="row row-cols-1 row-cols-md-2 g-4">
+    @for (concert of filteredConcerts(); track concert.id) {
+        <div class="col">
+        <div class="card h-100 shadow-sm" [class.bg-light]="concert.isPast">
+            <div class="card-body">
+            <div class="d-flex justify-content-between align-items-start mb-2">
+                <h5 class="card-title fw-bold mb-0">{{ concert.artist }}</h5>
+                @if (concert.isPast) {
+                <span class="badge bg-secondary">Vergangen</span>
+                } @else {
+                <span class="badge bg-success">Anstehend</span>
+                }
+            </div>
+
+            @if (concert.supportActs) {
+                <h6 class="card-subtitle mb-2 text-muted">
+                Support: {{ concert.supportActs }}
+                </h6>
+            }
+
+            <p class="card-text mb-1"><strong>Ort:</strong> {{ concert.venue }}</p>
+            <p class="card-text mb-1"><strong>Datum:</strong> {{ concert.date | date:'dd.MM.yyyy' }}</p>
+
+            @if (concert.rating) {
+                <p class="card-text mb-1"><strong>Bewertung:</strong> {{ concert.rating }} / 5 ⭐</p>
+            }
+
+            @if (concert.comment) {
+                <p class="card-text text-muted fst-italic">"{{ concert.comment }}"</p>
+            }
+            </div>
+            <div class="card-footer bg-transparent border-0 d-flex justify-content-end gap-2">
+            <a [routerLink]="['/edit', concert.id]" class="btn btn-sm btn-outline-secondary">Bearbeiten</a>
+            <button (click)="onDelete(concert.id)" class="btn btn-sm btn-outline-danger">Löschen</button>
+            </div>
+        </div>
+        </div>
+    } @empty {
+        <div class="col-12">
+        <p class="text-muted text-center my-4">Keine Konzerte in dieser Kategorie vorhanden.</p>
+        </div>
+    }
+    </div>
+
 </div>

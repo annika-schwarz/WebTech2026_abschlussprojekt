@@ -15,15 +15,45 @@ export class ConcertService {
       artist: 'Die Ärzte',
       venue: 'Waldbühne',
       date: '2024-06-15',
-      isPast: true
+      isPast: true,
+      rating: 5
     },
     {
       id: '2',
       artist: 'Beatsteaks',
       venue: 'Colos-Saal',
       date: '2026-11-20',
-      isPast: false
-    }
+      isPast: false,
+      rating: 4
+    },
+    {
+    id: '3',
+    artist: 'Coldplay',
+    venue: 'Olympiastadion Berlin',
+    date: '2028-07-12',
+    isPast: true,
+    rating: 5,
+    supportActs: 'Griff',
+    comment: 'Unglaubliche Show mit Armbändern und Feuerwerk!'
+  },
+  {
+    id: '4',
+    artist: 'Kraftklub',
+    venue: 'Westfalenhalle Dortmund',
+    date: '2022-11-28',
+    isPast: true,
+    rating: 4,
+    supportActs: 'BLOND',
+    comment: 'Klassisches Kraftklub-Moshpit, Wahnsinnsschiedsrichter-Atmosphäre.'
+  },
+  {
+    id: '5',
+    artist: 'Deichkind',
+    venue: 'Festwiese Leipzig',
+    date: '2026-08-22',
+    isPast: false,
+    supportActs: 'Das Lumpenpack'
+  }
   ]);
 
 
@@ -66,5 +96,13 @@ export class ConcertService {
       
     );
   }
+
+  // Berechnetes Signal für den Notenschnitt der Bewertungen (1-5)
+  averageRating = computed(() => {
+    const ratedConcerts = this.concerts().filter(c => c.rating && c.rating > 0); // erstellt Konstante mit allen Konzerten, die eine Bewertung haben und größer als 0 sind
+    if (ratedConcerts.length === 0) return '0.0';
+    const sumAllRatings = ratedConcerts.reduce((currentSum, c) => currentSum + (c.rating || 0), 0); // summiert alle Bewertungen der Konzerte, die eine Bewertung haben (ansonsten Addition mit 0), und gibt die Summe zurück
+    return (sumAllRatings / ratedConcerts.length).toFixed(1); // berechnet den Durchschnitt der Bewertungen und gibt ihn als String mit einer Nachkommastelle zurück (.toFixed(1))
+  });
 
 }
