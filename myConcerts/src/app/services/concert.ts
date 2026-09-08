@@ -61,14 +61,14 @@ export class ConcertService {
   allConcerts = this.concerts.asReadonly();
 
 
-  // berechnetes Signal, das die Konzerte in der Vergangenheit zurückgibt
+  // berechnetes (schreibgeschütztes) Signal, das vergangene Konzerte zurückgibt
   pastConcerts = computed(() => {
     const today = new Date().toISOString().split('T')[0]; // aktuelles Datum im Format YYYY-MM-DD
     return this.concerts().filter(c => c.date < today); // Filterung der Konzerte, die in der Vergangenheit liegen
   })
 
 
-  // berechnetes Signal, das die Konzerte in der Zukunft (einschließlich des heutigen Datums) zurückgibt
+  // berechnetes (schreibgeschütztes) Signal, das zukünftige Konzerte (einschließlich des heutigen Datums) zurückgibt
   upcomingConcerts = computed(() => {
     const today = new Date().toISOString().split('T')[0]; // aktuelles Datum im Format YYYY-MM-DD
     return this.concerts().filter(c => c.date >= today); // Filterung der Konzerte, die in der Zukunft (+ heutiges Datum) liegen
@@ -89,6 +89,23 @@ export class ConcertService {
   }
 
 
+  // Methode zum Aktualisieren eines bestehenden Konzerts
+updateConcert(id: string, updatedData: Partial<Omit<Concert, 'id'>>): void {  //geschachtelter TypeScript Utility Type: Omit<Concert, 'id'> erstellt Typ, der alle Eigenschaften von Concert enthält, außer 'id'. Partial<Omit<Concert, 'id'>> macht alle Eigenschaften optional (?), sodass nur die zu aktualisierenden Felder übergeben werden müssen.
+  const today = new Date().toISOString().split('T')[0];
+
+  this.concerts.update(currentConcerts =>
+    currentConcerts.map(concert => {    // geht durch jedes Konzert im aktuellen Signal und prüft, ob die ID übereinstimmt.
+      if (concert.id === id) {
+        const updatedConcert = { ...concert, ...updatedData };    // Wenn ja, wird das Konzert mit den neuen Daten aktualisiert, andernfalls bleibt es unverändert.
+        updatedConcert.isPast = (updatedConcert.date < today);    // isPast (true/false) wird neu berechnet für den Fall, dass das Datum geändert wurde
+        return updatedConcert;
+      }
+      return concert;
+    })
+  );
+}
+
+
   // Methode zum Löschen eines Konzerts aus dem Signal anhand der ID
   deleteConcert(concertId: string): void {
     this.concerts.update(currentConcerts =>
@@ -97,12 +114,14 @@ export class ConcertService {
     );
   }
 
-  // Berechnetes Signal für den Notenschnitt der Bewertungen (1-5)
-  averageRating = computed(() => {
-    const ratedConcerts = this.concerts().filter(c => c.rating && c.rating > 0); // erstellt Konstante mit allen Konzerten, die eine Bewertung haben und größer als 0 sind
-    if (ratedConcerts.length === 0) return '0.0';
-    const sumAllRatings = ratedConcerts.reduce((currentSum, c) => currentSum + (c.rating || 0), 0); // summiert alle Bewertungen der Konzerte, die eine Bewertung haben (ansonsten Addition mit 0), und gibt die Summe zurück
-    return (sumAllRatings / ratedConcerts.length).toFixed(1); // berechnet den Durchschnitt der Bewertungen und gibt ihn als String mit einer Nachkommastelle zurück (.toFixed(1))
-  });
+// Berechnetes Signal für den Bewertungsschnitt aller bewerteten Konzerte
+averageRating = computed(() => {
+  const ratedConcerts = this.concerts().filter(c => c.rating !== undefined && c.rating !== null); // Filtert nur die Konzerte, die eine Bewertung haben
+  if (ratedConcerts.length === 0) {             // Wenn keine Konzerte bewertet wurden, wird '0.0' zurückgegeben
+    return '0.0';
+  }
+  const sum = ratedConcerts.reduce((currentSum, c) => currentSum + (c.rating ?? 0), 0);   // Berechnung der Summe der Bewertungen, wobei undefined oder null als 0 behandelt wird, ?? ist der Nullish Coalescing Operator, der den rechten Wert zurückgibt, wenn der linke Wert null oder undefined ist
+  return (sum / ratedConcerts.length).toFixed(1); // Umwandlung in einen String (.toFixed(1)) mit 1 Nachkommastelle
+});
 
 }
