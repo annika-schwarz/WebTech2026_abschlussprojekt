@@ -9,7 +9,7 @@ import { DatePipe } from '@angular/common';
   templateUrl: './home.html',
   styleUrl: './home.css',
 })
-export class Home {
+export class HomeComponent {
   // Injection des ConcertService, um auf die Konzerte zuzugreifen
   concertService = inject(ConcertService);
 

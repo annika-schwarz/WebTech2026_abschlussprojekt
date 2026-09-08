@@ -6,4 +6,4 @@ import { Component } from '@angular/core';
   templateUrl: './concert-form.html',
   styleUrl: './concert-form.css',
 })
-export class ConcertForm {}
+export class ConcertFormComponent {}
