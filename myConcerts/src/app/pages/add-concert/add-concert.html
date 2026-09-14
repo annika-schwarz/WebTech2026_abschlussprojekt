@@ -1,1 +1,6 @@
-<p>add-concert works!</p>
+<div class="container py-4">
+  <h2 class="fw-bold mb-4">Neues Konzert eintragen</h2>
+  
+  <!-- Hier rufen wir das Formular auf -->
+  <app-concert-form (submitForm)="onSave($event)" />
+</div>
