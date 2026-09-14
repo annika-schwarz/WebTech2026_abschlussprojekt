@@ -1,113 +1,177 @@
 <div class="container py-4">
-
-    <div class="d-flex justify-content-between align-items-center mb-4">
-    <h2>Dashboard</h2>
-    <a routerLink="/add" class="btn btn-primary">+ Konzert hinzufügen</a>
+  <!-- Headerbereich & Button zum Hinzufügen -->
+  <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 pb-3 border-bottom">
+    <div>
+      <h1 class="h2 mb-1 fw-bold">Live Log</h1>
+      <p class="text-muted mb-0">Deine Konzert-Sammlung im Überblick</p>
     </div>
-
-    <!-- DASHBOARD KACHELN (4er-Grid) -->
-    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-4 g-3 mb-4">
     
-    <!-- Kachel 1: Alle -->
-    <div class="col">
-        <div 
-        class="card h-100 shadow-sm text-center cursor-pointer"
-        [class.border-primary]="selectedFilter() === 'all'"
-        [class.bg-primary]="selectedFilter() === 'all'"
-        [class.text-white]="selectedFilter() === 'all'"
-        (click)="switchFilter('all')">
-        <div class="card-body">
-            <h6 class="card-subtitle mb-1">Alle Konzerte</h6>
-            <h2 class="card-title mb-0">{{ concertService.allConcerts().length }}</h2>
+    <div class="mt-3 mt-md-0">
+      <a routerLink="/add" class="btn btn-primary d-inline-flex align-items-center gap-2 shadow-sm">
+        <span>+ Konzert eintragen</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- Suchleiste -->
+  <div class="row mb-4">
+    <div class="col-12 col-md-8 col-lg-6">
+      <div class="input-group shadow-sm">
+        <span class="input-group-text bg-white border-end-0">🔍</span>
+        <input 
+          type="text" 
+          class="form-control border-start-0 ps-0" 
+          placeholder="Suche nach Band, Support oder Ort..."
+          [value]="searchQuery()"
+          (input)="onSearchInput($event)"
+        />
+        @if (searchQuery() !== '') {
+          <button 
+            class="btn btn-outline-secondary border-start-0" 
+            type="button" 
+            (click)="searchQuery.set('')"
+            title="Suche zurücksetzen">
+            ✕
+          </button>
+        }
+      </div>
+    </div>
+  </div>
+
+  <!-- Dashboard-Kacheln (Interaktive Filter & Statistik) -->
+  <div class="row g-3 mb-4">
+    <!-- Kachel: Alle Konzerte -->
+    <div class="col-12 col-md-4">
+      <div 
+        class="card filter-card h-100 border-0 shadow-sm cursor-pointer"
+        [class.active-filter]="selectedFilter() === 'all'"
+        (click)="switchFilter('all')"
+        role="button">
+        <div class="card-body d-flex justify-content-between align-items-center">
+          <div>
+            <span class="text-muted small text-uppercase fw-semibold d-block">Gesamt</span>
+            <span class="h3 fw-bold mb-0">{{ concertService.allConcerts().length }}</span>
+          </div>
+          <div class="filter-icon-badge bg-primary-subtle text-primary rounded-circle p-3">
+            🎵
+          </div>
         </div>
-        </div>
+      </div>
     </div>
 
-    <!-- Kachel 2: Anstehend -->
-    <div class="col">
-        <div 
-        class="card h-100 shadow-sm text-center cursor-pointer"
-        [class.border-primary]="selectedFilter() === 'upcoming'"
-        [class.bg-primary]="selectedFilter() === 'upcoming'"
-        [class.text-white]="selectedFilter() === 'upcoming'"
-        (click)="switchFilter('upcoming')">
-        <div class="card-body">
-            <h6 class="card-subtitle mb-1">Anstehend</h6>
-            <h2 class="card-title mb-0">{{ concertService.upcomingConcerts().length }}</h2>
+    <!-- Kachel: Anstehende Konzerte -->
+    <div class="col-12 col-md-4">
+      <div 
+        class="card filter-card h-100 border-0 shadow-sm cursor-pointer"
+        [class.active-filter]="selectedFilter() === 'upcoming'"
+        (click)="switchFilter('upcoming')"
+        role="button">
+        <div class="card-body d-flex justify-content-between align-items-center">
+          <div>
+            <span class="text-muted small text-uppercase fw-semibold d-block">Anstehend</span>
+            <span class="h3 fw-bold mb-0 text-success">{{ concertService.upcomingConcerts().length }}</span>
+          </div>
+          <div class="filter-icon-badge bg-success-subtle text-success rounded-circle p-3">
+            🎟️
+          </div>
         </div>
-        </div>
+      </div>
     </div>
 
-    <!-- Kachel 3: Vergangen -->
-    <div class="col">
-        <div 
-        class="card h-100 shadow-sm text-center cursor-pointer"
-        [class.border-primary]="selectedFilter() === 'past'"
-        [class.bg-primary]="selectedFilter() === 'past'"
-        [class.text-white]="selectedFilter() === 'past'"
-        (click)="switchFilter('past')">
-        <div class="card-body">
-            <h6 class="card-subtitle mb-1">Vergangen</h6>
-            <h2 class="card-title mb-0">{{ concertService.pastConcerts().length }}</h2>
+    <!-- Kachel: Vergangene Konzerte & Rating-Schnitt -->
+    <div class="col-12 col-md-4">
+      <div 
+        class="card filter-card h-100 border-0 shadow-sm cursor-pointer"
+        [class.active-filter]="selectedFilter() === 'past'"
+        (click)="switchFilter('past')"
+        role="button">
+        <div class="card-body d-flex justify-content-between align-items-center">
+          <div>
+            <span class="text-muted small text-uppercase fw-semibold d-block">Besucht (∅ ★ {{ concertService.averageRating() }})</span>
+            <span class="h3 fw-bold mb-0 text-secondary">{{ concertService.pastConcerts().length }}</span>
+          </div>
+          <div class="filter-icon-badge bg-secondary-subtle text-secondary rounded-circle p-3">
+            🎸
+          </div>
         </div>
-        </div>
+      </div>
     </div>
+  </div>
 
-    <!-- Kachel 4: Ø Bewertung (Statisch, zeigt Notenschnitt) -->
-    <div class="col">
-        <div class="card h-100 shadow-sm text-center bg-light">
-        <div class="card-body">
-            <h6 class="card-subtitle mb-1 text-muted">Ø Bewertung</h6>
-            <h2 class="card-title mb-0 text-warning">{{ concertService.averageRating() }} ⭐</h2>
-        </div>
-        </div>
-    </div>
-
-    </div>
-
-    <!-- GEFILTERTE KONZERT-LISTE -->
-    <div class="row row-cols-1 row-cols-md-2 g-4">
+  <!-- Konzert-Grid -->
+  <div class="row g-4">
     @for (concert of filteredConcerts(); track concert.id) {
-        <div class="col">
-        <div class="card h-100 shadow-sm" [class.bg-light]="concert.isPast">
-            <div class="card-body">
-            <div class="d-flex justify-content-between align-items-start mb-2">
-                <h5 class="card-title fw-bold mb-0">{{ concert.artist }}</h5>
-                @if (concert.isPast) {
-                <span class="badge bg-secondary">Vergangen</span>
-                } @else {
-                <span class="badge bg-success">Anstehend</span>
-                }
+      <div class="col-12 col-md-6 col-lg-4">
+        <div class="card h-100 shadow-sm border-0 position-relative concert-card">
+          <div class="card-body d-flex flex-column">
+            
+            <!-- Badges & Datum -->
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <span class="badge" [class.bg-success]="!concert.isPast" [class.bg-secondary]="concert.isPast">
+                {{ concert.isPast ? 'Vergangen' : 'Anstehend' }}
+              </span>
+              <small class="text-muted fw-bold">
+                {{ concert.date | date:'dd.MM.yyyy' }}
+              </small>
             </div>
 
+            <!-- Haupt-Act & Vorbands -->
+            <h5 class="card-title text-primary fw-bold mb-1">{{ concert.artist }}</h5>
             @if (concert.supportActs) {
-                <h6 class="card-subtitle mb-2 text-muted">
+              <h6 class="card-subtitle text-muted mb-3 small">
                 Support: {{ concert.supportActs }}
-                </h6>
+              </h6>
+            } @else {
+              <div class="mb-3"></div>
             }
 
-            <p class="card-text mb-1"><strong>Ort:</strong> {{ concert.venue }}</p>
-            <p class="card-text mb-1"><strong>Datum:</strong> {{ concert.date | date:'dd.MM.yyyy' }}</p>
+            <!-- Veranstaltungsort -->
+            <p class="card-text mb-2 text-secondary">
+              📍 <strong>Ort:</strong> {{ concert.venue }}
+            </p>
 
-            @if (concert.rating) {
-                <p class="card-text mb-1"><strong>Bewertung:</strong> {{ concert.rating }} / 5 ⭐</p>
+            <!-- Bewertung & Kommentar (nur wenn vergangen) -->
+            @if (concert.isPast) {
+              <div class="mt-auto pt-3 border-top">
+                @if (concert.rating) {
+                  <div class="text-warning mb-1">
+                    @for (star of [1, 2, 3, 4, 5]; track star) {
+                      <span [class.text-muted]="star > concert.rating">★</span>
+                    }
+                    <span class="ms-1 small text-dark fw-bold">({{ concert.rating }}/5)</span>
+                  </div>
+                }
+                @if (concert.comment) {
+                  <p class="card-text text-muted fst-italic small mb-0">
+                    "{{ concert.comment }}"
+                  </p>
+                }
+              </div>
             }
 
-            @if (concert.comment) {
-                <p class="card-text text-muted fst-italic">"{{ concert.comment }}"</p>
-            }
+            <!-- Card Actions -->
+            <div class="d-flex justify-content-end gap-2 mt-3 pt-2 border-top">
+              <a [routerLink]="['/edit', concert.id]" class="btn btn-outline-secondary btn-sm">
+                Bearbeiten
+              </a>
+              <button 
+                type="button" 
+                class="btn btn-outline-danger btn-sm"
+                (click)="onDelete(concert.id)">
+                Löschen
+              </button>
             </div>
-            <div class="card-footer bg-transparent border-0 d-flex justify-content-end gap-2">
-            <a [routerLink]="['/edit', concert.id]" class="btn btn-sm btn-outline-secondary">Bearbeiten</a>
-            <button (click)="onDelete(concert.id)" class="btn btn-sm btn-outline-danger">Löschen</button>
-            </div>
+
+          </div>
         </div>
-        </div>
+      </div>
     } @empty {
-        <div class="col-12">
-        <p class="text-muted text-center my-4">Keine Konzerte in dieser Kategorie vorhanden.</p>
+      <div class="col-12">
+        <div class="alert alert-light text-center py-5 shadow-sm border" role="alert">
+          <p class="h5 text-muted mb-1">Keine Konzerte gefunden</p>
+          <small class="text-muted">Es gibt keine Einträge, die deiner Suche oder dem gewählten Filter entsprechen.</small>
         </div>
+      </div>
     }
-    </div>
-
+  </div>
 </div>

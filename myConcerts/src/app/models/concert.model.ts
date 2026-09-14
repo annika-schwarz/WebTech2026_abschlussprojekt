@@ -5,6 +5,6 @@ export interface Concert {
   venue: string;        //Veranstaltungsort 
   date: string;         //Datum des Konzerts
   isPast: boolean;      //Ob das Konzert in der Vergangenheit liegt
-  rating?: number;      //Optional: Bewertung des Konzerts (1-5 Sterne)
+  rating?: number | null;      //Optional: Bewertung des Konzerts (1-5 Sterne)
   comment?: string;     //Optional: Kommentar zum Konzert
 }

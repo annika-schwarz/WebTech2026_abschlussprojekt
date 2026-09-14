@@ -31,7 +31,7 @@ export class ConcertService {
     artist: 'Coldplay',
     venue: 'Olympiastadion Berlin',
     date: '2028-07-12',
-    isPast: true,
+    isPast: false,
     rating: 5,
     supportActs: 'Griff',
     comment: 'Unglaubliche Show mit Armbändern und Feuerwerk!'
@@ -51,7 +51,7 @@ export class ConcertService {
     artist: 'Deichkind',
     venue: 'Festwiese Leipzig',
     date: '2026-08-22',
-    isPast: false,
+    isPast: true,
     supportActs: 'Das Lumpenpack'
   }
   ]);

@@ -1,1 +1,117 @@
-<p>concert-form works!</p>
+<form [formGroup]="concertForm" (ngSubmit)="onSubmit()" novalidate class="needs-validation">
+  
+  <!-- Hauptkünstler (Artist) -->
+  <div class="mb-3">
+    <label for="artist" class="form-label fw-bold">Künstler / Band *</label>
+    <input 
+      type="text" 
+      id="artist" 
+      formControlName="artist" 
+      class="form-control"
+      [class.is-invalid]="concertForm.controls.artist.touched && concertForm.controls.artist.invalid"
+      placeholder="z. B. Linkin Park" 
+    />
+    @if (concertForm.controls.artist.touched && concertForm.controls.artist.invalid) {
+      <div class="invalid-feedback">
+        Bitte gib einen Künstlernamen ein.
+      </div>
+    }
+  </div>
+
+  <!-- Vorbands (Support Acts) -->
+  <div class="mb-3">
+    <label for="supportActs" class="form-label">Support Acts (Optional)</label>
+    <input 
+      type="text" 
+      id="supportActs" 
+      formControlName="supportActs" 
+      class="form-control"
+      placeholder="z. B. Grandson, Dead Sara" 
+    />
+  </div>
+
+  <div class="row">
+    <!-- Veranstaltungsort (Venue) -->
+    <div class="col-md-6 mb-3">
+      <label for="venue" class="form-label fw-bold">Veranstaltungsort *</label>
+      <input 
+        type="text" 
+        id="venue" 
+        formControlName="venue" 
+        class="form-control"
+        [class.is-invalid]="concertForm.controls.venue.touched && concertForm.controls.venue.invalid"
+        placeholder="z. B. Olympiastadion Berlin" 
+      />
+      @if (concertForm.controls.venue.touched && concertForm.controls.venue.invalid) {
+        <div class="invalid-feedback">
+          Bitte gib einen Veranstaltungsort an.
+        </div>
+      }
+    </div>
+
+    <!-- Datum (Date) -->
+    <div class="col-md-6 mb-3">
+      <label for="date" class="form-label fw-bold">Datum *</label>
+      <input 
+        type="date" 
+        id="date" 
+        formControlName="date" 
+        class="form-control"
+        [class.is-invalid]="concertForm.controls.date.touched && concertForm.controls.date.invalid" 
+      />
+      @if (concertForm.controls.date.touched && concertForm.controls.date.invalid) {
+        <div class="invalid-feedback">
+          Bitte wähle ein Datum aus.
+        </div>
+      }
+    </div>
+  </div>
+
+  <div class="row">
+    <!-- Bewertung (Rating 1-5) -->
+    <div class="col-md-4 mb-3">
+      <label for="rating" class="form-label">Bewertung (1 - 5 Sterne)</label>
+      <select 
+        id="rating" 
+        formControlName="rating" 
+        class="form-select"
+        [class.is-invalid]="concertForm.controls.rating.touched && concertForm.controls.rating.invalid"
+      >
+        <option [ngValue]="null">Keine Bewertung</option>
+        <option [ngValue]="1">1 Stern ⭐</option>
+        <option [ngValue]="2">2 Sterne ⭐⭐</option>
+        <option [ngValue]="3">3 Sterne ⭐⭐⭐</option>
+        <option [ngValue]="4">4 Sterne ⭐⭐⭐⭐</option>
+        <option [ngValue]="5">5 Sterne ⭐⭐⭐⭐⭐</option>
+      </select>
+      @if (concertForm.controls.rating.touched && concertForm.controls.rating.invalid) {
+        <div class="invalid-feedback">
+          Bewertung muss zwischen 1 und 5 liegen.
+        </div>
+      }
+    </div>
+
+    <!-- Kommentar / Notizen (Comments) -->
+    <div class="col-md-8 mb-3">
+      <label for="comments" class="form-label">Notizen / Erinnerungen</label>
+      <textarea 
+        id="comments" 
+        formControlName="comments" 
+        class="form-control" 
+        rows="3"
+        placeholder="Wie war die Stimmung, Setlist, etc.?"
+      ></textarea>
+    </div>
+  </div>
+
+  <!-- Submit & Abbrechen Buttons -->
+  <div class="d-flex gap-2 justify-content-end mt-3">
+    <button 
+      type="submit" 
+      class="btn btn-primary" 
+      [disabled]="concertForm.invalid"
+    >
+      {{ initialData() ? 'Konzert aktualisieren' : 'Konzert speichern' }}
+    </button>
+  </div>
+</form>
