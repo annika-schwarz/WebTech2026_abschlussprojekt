@@ -1,1 +1,10 @@
-<p>edit-concert works!</p>
+<div class="container py-4">
+  <h2 class="fw-bold mb-4">Konzert bearbeiten</h2>
+
+  <!-- [initialData] schickt das Konzert via Signal ins Formular -->
+  <!-- (submitForm) fängt die aktualisierten Daten ab -->
+  <app-concert-form 
+    [initialData]="concertToEdit()" 
+    (submitForm)="onUpdate($event)" 
+  />
+</div>

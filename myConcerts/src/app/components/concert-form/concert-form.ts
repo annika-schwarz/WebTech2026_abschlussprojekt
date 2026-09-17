@@ -32,7 +32,7 @@ export class ConcertFormComponent {
     venue: ['', Validators.required],
     date: ['', Validators.required],
     rating: [null as number | null, [Validators.min(1), Validators.max(5)]], // min und max für die Bewertung
-    comments: ['']
+    comment: ['']
   });
 
   // Schlüsselwort "constructor" ist eine spezielle Methode,
@@ -47,7 +47,7 @@ export class ConcertFormComponent {
           venue: data.venue,
           date: data.date,
           rating: data.rating ?? null, // null, wenn keine Bewertung vorhanden ist
-          comments: data.comment || '' // leerer String, wenn kein Kommentar vorhanden ist
+          comment: data.comment || '' // leerer String, wenn kein Kommentar vorhanden ist
         });
       }
     });
