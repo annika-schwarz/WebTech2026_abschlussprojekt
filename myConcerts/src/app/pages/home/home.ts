@@ -10,7 +10,7 @@ import { Concert } from '../../models/concert.model';
   templateUrl: './home.html',
   styleUrl: './home.css',
 })
-export default class HomeComponent {
+export class HomeComponent {
   // Injection des ConcertService, um auf die Konzerte zuzugreifen
   concertService = inject(ConcertService);
 

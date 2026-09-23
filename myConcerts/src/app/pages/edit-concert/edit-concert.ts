@@ -10,7 +10,7 @@ import { Concert } from '../../models/concert.model';
   templateUrl: './edit-concert.html',
   styleUrl: './edit-concert.css',
 })
-export default class EditConcertComponent implements OnInit {
+export class EditConcertComponent implements OnInit {
 
   private route = inject(ActivatedRoute);
   private router = inject(Router);

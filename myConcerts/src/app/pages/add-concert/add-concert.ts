@@ -10,7 +10,7 @@ import { Concert } from '../../models/concert.model';
   templateUrl: './add-concert.html',
   styleUrl: './add-concert.css',
 })
-export default class AddConcertComponent {
+export class AddConcertComponent {
 
   private concertService = inject(ConcertService); // injiziert den ConcertService, um auf die Methoden zum Speichern von Konzerten zuzugreifen
   private router = inject(Router); // injiziert den Router, um nach dem Speichern des Konzerts zur Startseite zu navigieren
