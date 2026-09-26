@@ -1,4 +1,5 @@
-import { Injectable, signal, computed } from '@angular/core';
+import { Injectable, signal, computed, inject } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 import { Concert } from '../models/concert.model';
 
 @Injectable({
@@ -6,61 +7,37 @@ import { Concert } from '../models/concert.model';
 })
 export class ConcertService {
 
+  private http = inject(HttpClient); // injeziert HttPClient für API-Anfragen
+  private apiUrl = 'http://localhost:3000/api/concerts'; // Basis-URL fürs Express-Backend
 
-  // Erstellung Signal vom Typ Concert[] (Array von Concert-Objekten)
-  // mit initialen Testdaten.
-  private concerts = signal<Concert[]>([
-    {
-      id: '1',
-      artist: 'Die Ärzte',
-      venue: 'Waldbühne',
-      date: '2024-06-15',
-      isPast: true,
-      rating: 5
-    },
-    {
-      id: '2',
-      artist: 'Beatsteaks',
-      venue: 'Colos-Saal',
-      date: '2026-11-20',
-      isPast: false,
-      rating: 4
-    },
-    {
-    id: '3',
-    artist: 'Coldplay',
-    venue: 'Olympiastadion Berlin',
-    date: '2028-07-12',
-    isPast: false,
-    rating: 5,
-    supportActs: 'Griff',
-    comment: 'Unglaubliche Show mit Armbändern und Feuerwerk!'
-  },
-  {
-    id: '4',
-    artist: 'Kraftklub',
-    venue: 'Westfalenhalle Dortmund',
-    date: '2022-11-28',
-    isPast: true,
-    rating: 4,
-    supportActs: 'BLOND',
-    comment: 'Klassisches Kraftklub-Moshpit, Wahnsinnsschiedsrichter-Atmosphäre.'
-  },
-  {
-    id: '5',
-    artist: 'Deichkind',
-    venue: 'Festwiese Leipzig',
-    date: '2026-08-22',
-    isPast: true,
-    supportActs: 'Das Lumpenpack'
-  }
-  ]);
-
+  // Erstellung Signal vom Typ Concert[] (initialisiert mit leerem Array)
+  private concerts = signal<Concert[]>([]);
 
   // schreibgeschützte Version des Signals, die nur gelesen werden kann
   allConcerts = this.concerts.asReadonly();
 
+  constructor() {
+    this.loadConcerts();
+  }
 
+  // Methode zum Abrufen aller Konzerte im Backend
+  loadConcerts(): void {
+    this.http.get<Concert[]>(this.apiUrl).subscribe({   // http-GET-Anfrage an Backend-URL, die als Concerts[] typisiert ist, die durch .subscribe() abgeschickt wird
+      // Wenn erfolgreiche Antwort (200 OK etc.) vom Backend
+      next: (data) => {     // data = vom Backend gesendete JSON-Daten (Concert[])
+        console.log('Daten erfolgreich empfangen:', data);
+        this.concerts.set(data);    // this.concerts enthält nun alle Konzerte vom Backend
+      },
+      // wenn Anfrage fehlschlägt
+      error: (err) => {   // err = HttPErrorResponse-Objekt mit Eigenschaften
+        console.error('Fehler bei der HTTP-Anfrage:', err);   // gibt alle Infos des Error-Objekts aus
+      },
+      complete: () => {
+        console.log('HTTP-Anfrage ist abgeschllossen.');
+      }
+    });
+  } 
+  
   // berechnetes (schreibgeschütztes) Signal, das vergangene Konzerte zurückgibt
   pastConcerts = computed(() => {
     const today = new Date().toISOString().split('T')[0]; // aktuelles Datum im Format YYYY-MM-DD
